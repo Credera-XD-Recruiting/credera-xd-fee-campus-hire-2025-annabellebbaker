@@ -18,6 +18,16 @@ const StarIcon = () => (
   </svg>
 );
 
+///------ HELPER FUNCTION -- this is a new const that will grab initials from a name --------///
+// this will display if a profile picture is not showing up
+const getInitials = name => {
+  if (!name) return '?'; // if name doesn't appear, return the value when there is no name (return the string '?')
+
+  const names = name.trim().split(' '); // breaking up the name to get initials, splitting into parts
+  if (names.length === 1) return names[0].charAt(0).toUpperCase(); // handling single names (with no last name) -- just one initial
+  return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase(); // formatting to upper case, this is handling full names
+};
+
 // object for the friends list, grabbing from the db.json
 export const ProfileFriends = () => {
   const { data, isLoading } = useQuery({
@@ -95,45 +105,62 @@ export const ProfileFriends = () => {
   /* updated this portion completely -- main change:
   - I was accessing the list as isTopFriend, but its topFriend in the db.json */
   return (
-    <section id="profile-friends">
-      <div className="content-card fade-in">
-        <h2 className="page-heading-2">Friends</h2>
-        <ul className="profile-friends-list">
-          {friends.map((friend, index) => (
-            <li
-              className={`profile-list-item fade-in ${friend.topFriend ? 'top-friend' : ''}`}
-              key={index}
-            >
-              <div className="profile-list-item-avatar">
+  <section id="profile-friends">
+    <div className="content-card fade-in">
+      <h2 className="page-heading-2">Friends</h2>
+      <ul className="profile-friends-list">
+        {friends.map((friend, index) => (
+          <li
+            className={`profile-list-item fade-in ${friend.topFriend ? 'top-friend' : ''}`}
+            key={index}
+          >
+            <div className="profile-list-item-avatar">
+              {friend.image ? (
                 <img
                   src={friend.image}
                   onError={e => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src =
-                      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"%3E%3Cpath d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E';
+                    e.currentTarget.style.display = 'none';
+                    const initialsDiv = e.currentTarget.nextElementSibling;
+                    if (
+                      initialsDiv &&
+                      initialsDiv.classList.contains('avatar-initials')
+                    ) {
+                      initialsDiv.style.display = 'flex';
+                    }
                   }}
-                  alt={`Profile picture for ${friend.name}`} // need to change to initials of person's name here!
+                  alt={`Profile picture for ${friend.name}`}
                 />
+              ) : null}
 
-                {friend.topFriend && (
-                  <div className="top-friend-indicator">
-                    <StarIcon />
-                  </div>
-                )}
+              {/* Initials display */}
+              <div 
+                className="avatar-initials" 
+                style={{ display: friend.image ? 'none' : 'flex' }}
+              >
+                {getInitials(friend.name)}
               </div>
-              <div className="profile-list-item-info">
-                {friend.topFriend && (
-                  <p className="top-friend-flag">⭐ Top Friend</p>
-                )}
-                <p className="page-paragraph">{friend.name}</p>
-                <p className="page-micro">
-                  {friend.jobTitle} @ {friend.companyName}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-};
+
+              {/* Top friend star badge */}
+              {friend.topFriend && (
+                <div className="top-friend-indicator">
+                  <StarIcon />
+                </div>
+              )}
+            </div>
+            
+            <div className="profile-list-item-info">
+              {friend.topFriend && (
+                <p className="top-friend-flag">⭐ Top Friend</p>
+              )}
+              <p className="page-paragraph">{friend.name}</p>
+              <p className="page-micro">
+                {friend.jobTitle} @ {friend.companyName}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)};

@@ -35,14 +35,6 @@
   margin-bottom: 8px;
 }
 
-/* Star icon styling */
-.top-friend-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--grayscale_1);
-  fill: currentColor;
-}
-
 .profile-list-item-avatar {
   display: inline-block;
   background-color: var(--grayscale_2);
@@ -56,6 +48,9 @@
 .profile-list-item-avatar img {
   height: 100%;
   width: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
 }
 
 .profile-list-item-info {
@@ -63,8 +58,15 @@
   margin-left: 24px;
 }
 
-/* SKELETON LOADING */
+/* Star icon styling */
+.top-friend-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--grayscale_1);
+  fill: currentColor;
+}
 
+/* SKELETON LOADING */
 #profile-friends .skeleton-block {
   margin-bottom: 4px;
 }
