@@ -2,6 +2,23 @@ import './style.css';
 import { getFriendsListData } from '../../services/profile';
 import { useQuery } from '@tanstack/react-query';
 
+// object for the star icon - added for the topFriends icon
+const StarIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className="top-friend-icon"
+  >
+    <path
+      fillRule="evenodd"
+      d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+// object for the friends list, grabbing from the db.json
 export const ProfileFriends = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['friends'],
@@ -47,19 +64,46 @@ export const ProfileFriends = () => {
       </section>
     );
 
-  const { friends } = data;
+  // Access the nested [friends] array and use 'topFriend' property
+  const friends = data?.friends?.[0]?.friends || data?.friends || [];
 
+  // this is for the browser console to make sure it's grabbing the topFriends correctly ^^
+  console.log('Raw data:', data);
+  console.log('Friends array:', friends);
+
+  /* updated this portion completely -- main change:
+  - I was accessing the list as isTopFriend, but its topFriend in the db.json */
   return (
     <section id="profile-friends">
       <div className="content-card fade-in">
         <h2 className="page-heading-2">Friends</h2>
         <ul className="profile-friends-list">
           {friends.map((friend, index) => (
-            <li className="profile-list-item fade-in" key={index}>
+            <li
+              className={`profile-list-item fade-in ${friend.topFriend ? 'top-friend' : ''}`}
+              key={index}
+            >
               <div className="profile-list-item-avatar">
-                <img className="loading" src={friend.image} />
+                <img
+                  src={friend.image}
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23cccccc"%3E%3Cpath d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/%3E%3C/svg%3E';
+                  }}
+                  alt={`Profile picture for ${friend.name}`} // need to change to initials of person's name here!
+                />
+
+                {friend.topFriend && (
+                  <div className="top-friend-indicator">
+                    <StarIcon />
+                  </div>
+                )}
               </div>
               <div className="profile-list-item-info">
+                {friend.topFriend && (
+                  <p className="top-friend-flag">⭐ Top Friend</p>
+                )}
                 <p className="page-paragraph">{friend.name}</p>
                 <p className="page-micro">
                   {friend.jobTitle} @ {friend.companyName}

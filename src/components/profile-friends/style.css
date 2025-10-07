@@ -28,11 +28,19 @@
 }
 
 .profile-list-item .top-friend-flag {
-  display: none;
+  display: block; /* this was "none" before, I want it to show! */
 }
 
 .profile-list-item .top-friend-flag + .page-paragraph {
   margin-bottom: 8px;
+}
+
+/* Star icon styling */
+.top-friend-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--grayscale_1);
+  fill: currentColor;
 }
 
 .profile-list-item-avatar {
@@ -58,5 +66,5 @@
 /* SKELETON LOADING */
 
 #profile-friends .skeleton-block {
-    margin-bottom: 4px;
+  margin-bottom: 4px;
 }
