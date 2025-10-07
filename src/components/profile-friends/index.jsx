@@ -65,11 +65,32 @@ export const ProfileFriends = () => {
     );
 
   // Access the nested [friends] array and use 'topFriend' property
-  const friends = data?.friends?.[0]?.friends || data?.friends || [];
+  const friendsData = data?.friends?.[0]?.friends || data?.friends || [];
 
   // this is for the browser console to make sure it's grabbing the topFriends correctly ^^
-  console.log('Raw data:', data);
-  console.log('Friends array:', friends);
+  //console.log('Raw data:', data);
+  //console.log('Friends array:', friends);
+
+  //----- SORTING SECTION -- top friends first, and then by last name -----//
+  const friends = [...friendsData].sort((a, b) => {
+    // sorting it up!
+
+    // top friends first!
+    // Example: a = Stuart Raymond, b = Jamie Cowhan
+    if (a.topFriend && !b.topFriend) return -1; // "a" is one parameter for a comparison function in the .sort() (#1 item)
+    // "If Stuart IS a top friend AND Jamie is NOT, put Stuart first"
+    if (!a.topFriend && b.topFriend) return 1; // "b" is the other compared parameter (#2 item)
+    // if Stuart is NOT a top friend and Jamie is, put Jamie first
+    // a comes before b (-1)
+    // b comes before a (1)
+    // 0 keeps current order
+
+    // sort alphabetically by last name -- if both are top friends OR both are regular friends
+    const lastNameA = (a.name || '').split(' ').pop().toLowerCase(); // added in (a.name || '') for safety checks just in case they don't have a profile picture!
+    const lastNameB = (b.name || '').split(' ').pop().toLowerCase(); // same for here
+
+    return lastNameA.localeCompare(lastNameB); // now compare them with results
+  });
 
   /* updated this portion completely -- main change:
   - I was accessing the list as isTopFriend, but its topFriend in the db.json */
